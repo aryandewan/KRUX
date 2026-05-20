@@ -33,7 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="no-scrollbar">
+      <body className="no-scrollbar font-outfit">
         <Navbar />
         {children}
         <ScrollRestoration />

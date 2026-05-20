@@ -1,6 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DropdownButton from "../ui/DropdownButton";
 import { Menu } from "~/data/data";
+import { useFetcher } from "react-router";
+import type { action } from "~/routes/api/generate";
 
 const PLACEHOLDER = `var twoSum = function(nums, target) {
     for(let i = 0; i < nums.length; i++) {
@@ -34,6 +36,14 @@ const skipIndentBackward = (s: string) => {
 };
 
 const Code = () => {
+  const fetcher = useFetcher<typeof action>();
+  const onGenerate = () => {
+    fetcher.submit(selected, {
+      method: "post",
+      action: "/api/generate",
+      encType: "application/json",
+    });
+  };
   const targetTextRef = useRef<HTMLTextAreaElement>(null);
   const [code, setCode] = useState(() => skipIndentForward(""));
   const [open, setOpen] = useState<string | null>(null);
@@ -52,19 +62,32 @@ const Code = () => {
     setCode(grew ? skipIndentForward(raw) : skipIndentBackward(raw));
   };
 
+  useEffect(() => {
+    if (fetcher.data?.code) setCode(fetcher.data.code);
+  }, [fetcher.data]);
+
   return (
     <section className="w-full min-h-dvh flex flex-col items-center justify-start gap-5 py-10">
-      <div className="flex gap-5 max-w-4xl w-full z-50">
-        {Menu.map((m) => (
-          <DropdownButton
-            key={m.label}
-            value={m.label}
-            open={open}
-            setOpen={setOpen}
-            selected={selected[m.label]}
-            onSelect={(item) => onSelect(m.label, item)}
-          />
-        ))}
+      <div className="flex justify-between max-w-4xl w-full z-50">
+        <div className="flex gap-5">
+          {Menu.map((m) => (
+            <DropdownButton
+              key={m.label}
+              value={m.label}
+              open={open}
+              setOpen={setOpen}
+              selected={selected[m.label]}
+              onSelect={(item) => onSelect(m.label, item)}
+            />
+          ))}
+        </div>
+        <button
+          onClick={onGenerate}
+          disabled={fetcher.state !== "idle"}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 cursor-pointer"
+        >
+          {fetcher.state === "idle" ? "Generate" : "Generating..."}
+        </button>
       </div>
       <pre className="w-full max-w-4xl bg-[#161616] h-96 rounded-xl border border-white/20 relative overflow-hidden">
         <code

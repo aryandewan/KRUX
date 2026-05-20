@@ -34,11 +34,10 @@ export const Topics = [
     "Hash Tables",
 ] as const;
 
-export const Difficulties = ["Easy", "Medium", "Hard"] as const;
+export const Difficulties = ["Junior", "Mid-Level", "Senior"] as const;
 
 export const Menu: MenuType[] = [
     { label: "LANGUAGE", items: [...Languages] },
     { label: "TOPIC", items: [...Topics] },
     { label: "DIFFICULTY", items: [...Difficulties] },
 ];
-
